@@ -228,7 +228,10 @@ export class MotionKernel {
       }
     }
 
-    // Final segment must come to a complete stop
+    // Final segment must come to a complete stop.
+    // segs is guaranteed non-empty: _lookAheadPass is only called from planPath
+    // which returns early when sparks.length < 2, so _buildSegments always
+    // produces at least one segment before we reach here.
     segs[segs.length - 1].exitVelocity = 0;
   }
 

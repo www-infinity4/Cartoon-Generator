@@ -139,14 +139,18 @@ export class GCodeStuffer {
       interpreter.parseLine(line);
       const after = interpreter.getMoves().length;
 
-      // Extract any new spark(s) produced by this line
+      // Extract any new spark(s) produced by this line.
+      // Arc moves contribute their interpolated intermediate points;
+      // linear moves contribute the single destination position.
       const newMoves = interpreter.getMoves().slice(before, after);
       for (const move of newMoves) {
-        if (motionOnly && move.arcPoints.length === 0) {
-          batch.push(move.position);
-        } else if (move.arcPoints.length > 0) {
+        if (move.arcPoints.length > 0) {
+          // G2/G3 arc: push all interpolated arc points
           batch.push(...move.arcPoints);
-        } else if (!motionOnly) {
+        } else if (!motionOnly || before !== after) {
+          // Linear move (G0/G1): push the destination position.
+          // When motionOnly=true we only reach here because a move was recorded,
+          // so `before !== after` is always true for linear moves.
           batch.push(move.position);
         }
       }
@@ -185,10 +189,10 @@ export class GCodeStuffer {
       totalViolations: 0, totalClamped: 0, totalSkipped: 0, elapsedMs: 0,
     };
 
-    for (const line of lines) stats.totalLines++;
-
-    // Re-iterate (requires array input for two-pass; accept that trade-off
-    // for the stats variant, or users can pass a pre-collected array).
+    // Materialise into an array once so we get an accurate line count without
+    // a separate pre-pass iteration.  This is the documented trade-off for the
+    // stats variant — callers needing true single-pass streaming should use
+    // streamGCode() directly and track their own counters.
     const linesArr = Array.isArray(lines) ? lines : [...lines];
     stats.totalLines = linesArr.length;
 

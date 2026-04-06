@@ -71,6 +71,16 @@ export interface ValidationReport {
   workerTimes: number[];
 }
 
+// ── Helpers ───────────────────────────────────────────────────────────────────
+
+/** Returns the number of logical CPU cores, with a safe fallback to 4. */
+function resolveWorkerCount(): number {
+  if (typeof navigator !== 'undefined' && navigator.hardwareConcurrency > 0) {
+    return navigator.hardwareConcurrency;
+  }
+  return 4;
+}
+
 // ── MTSV manager ──────────────────────────────────────────────────────────────
 
 export class MTSV {
@@ -85,8 +95,7 @@ export class MTSV {
    *                     `navigator.hardwareConcurrency` (falls back to 4).
    */
   constructor(workerCount?: number) {
-    this.numWorkers = workerCount
-      ?? (typeof navigator !== 'undefined' ? (navigator.hardwareConcurrency || 4) : 4);
+    this.numWorkers = workerCount ?? resolveWorkerCount();
 
     this._workers = Array.from({ length: this.numWorkers }, (_, i) => {
       try {
