@@ -26,8 +26,12 @@ import { Vector3 } from './vector3';
 
 /** Velocity profile for one linear segment (all values in mm and mm/s). */
 export interface SegmentProfile {
-  /** Segment index in the original spark array. */
-  index: number;
+  /**
+   * Zero-based index of the **start** spark in the original array passed to
+   * `planPath`.  Zero-length segments are skipped, so consecutive
+   * `segmentIndex` values may not be contiguous.
+   */
+  segmentIndex: number;
   /** World-space start point. */
   from: Vector3;
   /** World-space end point. */
@@ -182,7 +186,7 @@ export class MotionKernel {
         : 0;
 
       segs.push({
-        index:          i,
+        segmentIndex:   i,
         from,
         to,
         length:         len,
