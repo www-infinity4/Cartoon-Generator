@@ -18,7 +18,7 @@
  *   const gcode = asset.toGCode();
  */
 import { Vector3 } from './vector3';
-import { AABB } from './kinematics';
+import { AABB } from './aabb';
 import {
   BaseMachinistAsset,
   AssetFactory,

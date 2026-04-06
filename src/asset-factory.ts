@@ -11,7 +11,7 @@
  * Infinity Crown Index value-logic.
  */
 import { Vector3 } from './vector3';
-import { AABB } from './kinematics';
+import { AABB } from './aabb';
 
 // ── Core interface ────────────────────────────────────────────────────────────
 

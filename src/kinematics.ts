@@ -7,6 +7,7 @@
  * a target position in 3D space without tearing joint constraints.
  */
 import { Vector3 } from './vector3';
+import { AABB } from './aabb';
 
 /** A single rigid bone segment with a length, local rotation angle, and world position. */
 export class Bone {
@@ -30,12 +31,6 @@ export class Bone {
       this.position.z,
     );
   }
-}
-
-/** Axis-aligned bounding box used for joint reach safety checks. */
-export interface AABB {
-  min: Vector3;
-  max: Vector3;
 }
 
 /** Result of a solve operation, including whether the target was reachable. */
