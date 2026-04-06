@@ -126,7 +126,7 @@ export class Matrix4 {
     return new Matrix4([
       f / aspect, 0,                      0,  0,
       0,          f,                      0,  0,
-      0,          0, (far + near) * nf,      -1,
+      0,          0, (far + near) * nf,      -1, // -1 in w-column drives the perspective divide (w = -z after transform)
       0,          0, 2 * far * near * nf,     0,
     ]);
   }

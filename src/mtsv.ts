@@ -88,9 +88,17 @@ export class MTSV {
     this.numWorkers = workerCount
       ?? (typeof navigator !== 'undefined' ? (navigator.hardwareConcurrency || 4) : 4);
 
-    this._workers = Array.from({ length: this.numWorkers }, () =>
-      new Worker(new URL('./mtsv.worker.ts', import.meta.url), { type: 'module' }),
-    );
+    this._workers = Array.from({ length: this.numWorkers }, (_, i) => {
+      try {
+        return new Worker(new URL('./mtsv.worker.ts', import.meta.url), { type: 'module' });
+      } catch (err) {
+        throw new Error(
+          `MTSV: failed to spawn worker ${i}. ` +
+          `Ensure your bundler supports import.meta.url worker URLs ` +
+          `(Vite, Webpack 5, esbuild). Original error: ${(err as Error).message}`,
+        );
+      }
+    });
   }
 
   // ── Public API ────────────────────────────────────────────────────────────

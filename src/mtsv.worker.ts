@@ -89,5 +89,6 @@ self.onmessage = (e: MessageEvent<MTSVWorkerRequest>): void => {
     durationMs: performance.now() - t0,
   };
 
-  (self as unknown as { postMessage(data: MTSVWorkerResponse): void }).postMessage(response);
+  // postMessage is always available in worker scope as a global
+  postMessage(response);
 };
