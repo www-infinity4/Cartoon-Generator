@@ -321,49 +321,37 @@ export class GCodeInterpreter {
     kOff: number,
     clockwise: boolean,
   ): Vector3[] {
-    // Determine which axes are in-plane vs. the helical axis
-    let [a1, a2, helical]: Array<keyof Vector3> = ['x', 'y', 'z'];
-    let [c1, c2]: [number, number] = [iOff, jOff];
+    // Map each plane to (firstAxis, secondAxis, helicalAxis, c1, c2)
+    type Axis = 'x' | 'y' | 'z';
+    let a1: Axis = 'x', a2: Axis = 'y', ha: Axis = 'z';
+    let c1 = iOff, c2 = jOff;
 
-    if (this._plane === 'XZ') {
-      [a1, a2, helical] = ['x', 'z', 'y'];
-      [c1, c2] = [iOff, kOff];
-    } else if (this._plane === 'YZ') {
-      [a1, a2, helical] = ['y', 'z', 'x'];
-      [c1, c2] = [jOff, kOff];
-    }
+    if (this._plane === 'XZ') { a1 = 'x'; a2 = 'z'; ha = 'y'; c1 = iOff; c2 = kOff; }
+    else if (this._plane === 'YZ') { a1 = 'y'; a2 = 'z'; ha = 'x'; c1 = jOff; c2 = kOff; }
 
-    // Centre of the arc circle in world space
-    const cx = (this._pos[a1] as number) + c1;
-    const cy = (this._pos[a2] as number) + c2;
+    const cx = this._pos[a1] + c1;
+    const cy = this._pos[a2] + c2;
 
-    // Start and end angles
-    const startAngle = Math.atan2((this._pos[a2] as number) - cy, (this._pos[a1] as number) - cx);
-    const endAngle   = Math.atan2((target[a2]    as number) - cy, (target[a1]    as number) - cx);
-    const radius     = Math.hypot((this._pos[a1] as number) - cx, (this._pos[a2] as number) - cy);
+    const startAngle = Math.atan2(this._pos[a2] - cy, this._pos[a1] - cx);
+    const endAngle   = Math.atan2(target[a2]    - cy, target[a1]    - cx);
+    const radius     = Math.hypot(this._pos[a1] - cx, this._pos[a2] - cy);
 
-    // Sweep angle with correct winding
     let sweep = endAngle - startAngle;
-    if (clockwise  && sweep > 0) sweep -= 2 * Math.PI;
+    if ( clockwise && sweep > 0) sweep -= 2 * Math.PI;
     if (!clockwise && sweep < 0) sweep += 2 * Math.PI;
 
-    // Helical interpolation (Z changes linearly over the arc)
-    const startHelical = this._pos[helical] as number;
-    const endHelical   = target[helical]    as number;
-    const dHelical     = endHelical - startHelical;
-
-    const n = this.arcSegments;
+    const startH = this._pos[ha];
+    const dH     = target[ha] - startH;
+    const n      = this.arcSegments;
     const pts: Vector3[] = [];
 
-    for (let i = 1; i <= n; i++) {
-      const t     = i / n;
+    for (let s = 1; s <= n; s++) {
+      const t     = s / n;
       const angle = startAngle + sweep * t;
       const p     = new Vector3();
-
-      (p as Record<string, number>)[a1 as string]      = cx + radius * Math.cos(angle);
-      (p as Record<string, number>)[a2 as string]      = cy + radius * Math.sin(angle);
-      (p as Record<string, number>)[helical as string] = startHelical + dHelical * t;
-
+      p[a1] = cx + radius * Math.cos(angle);
+      p[a2] = cy + radius * Math.sin(angle);
+      p[ha] = startH + dH * t;
       pts.push(p);
     }
 

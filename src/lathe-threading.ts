@@ -87,10 +87,10 @@ export class LatheThreadingAsset implements BaseMachinistAsset<LatheThreadParams
     const xs = pts.map(p => p.x);
     const ys = pts.map(p => p.y);
     const zs = pts.map(p => p.z);
-    return {
-      min: new Vector3(Math.min(...xs), Math.min(...ys), Math.min(...zs)),
-      max: new Vector3(Math.max(...xs), Math.max(...ys), Math.max(...zs)),
-    };
+    return new AABB(
+      new Vector3(Math.min(...xs), Math.min(...ys), Math.min(...zs)),
+      new Vector3(Math.max(...xs), Math.max(...ys), Math.max(...zs)),
+    );
   }
 
   toGCode(): string {

@@ -79,7 +79,8 @@ export interface ArcValidation {
   warnings: string[];
 }
 
-// ── ArcInterpolator ───────────────────────────────────────────────────────────
+/** The three numeric coordinate axes of a Vector3. */
+type Axis = 'x' | 'y' | 'z';
 
 export class ArcInterpolator {
   /**
@@ -251,7 +252,7 @@ export class ArcInterpolator {
    */
   private _axisMap(
     plane: ArcPlane, i: number, j: number, k: number,
-  ): [keyof Vector3, keyof Vector3, keyof Vector3, number, number] {
+  ): [Axis, Axis, Axis, number, number] {
     switch (plane) {
       case 'XZ': return ['x', 'z', 'y', i, k];
       case 'YZ': return ['y', 'z', 'x', j, k];
@@ -261,5 +262,54 @@ export class ArcInterpolator {
 
   private _step(point: Vector3, t: number, arcLength: number, clamped: boolean): ArcStep {
     return { point, t, arcLength, clamped };
+  }
+
+  // ── Static convenience API (matches requirement spec) ─────────────────────
+
+  /**
+   * Static one-call interpolator for simple XY-plane G2/G3 arcs.
+   *
+   * Converts a G2/G3 arc into a stream of AABB-vetted Vector3 sparks.
+   * Generation stops immediately if a spark falls outside `safetyCage`.
+   *
+   * @param start      Current position of the CNC bit.
+   * @param end        Target position (the G2/G3 coordinate).
+   * @param offset     Centre offsets `{ i, j }` relative to `start`.
+   * @param clockwise  `true` = G2 (CW),  `false` = G3 (CCW).
+   * @param safetyCage AABB work envelope — every micro-spark is checked.
+   * @param segmentLength  Max chord length per spark in mm (default 0.1).
+   */
+  static interpolate(
+    start: Vector3,
+    end: Vector3,
+    offset: { i: number; j: number },
+    clockwise: boolean,
+    safetyCage: AABB,
+    segmentLength: number = 0.1,
+  ): Vector3[] {
+    const interp = new ArcInterpolator(segmentLength);   // no bounds — we check manually
+    const params: ArcParams = {
+      start, end,
+      i: offset.i, j: offset.j, k: 0,
+      clockwise,
+      plane: 'XY',
+    };
+
+    const path: Vector3[] = [];
+    const steps = interp.interpolate(params);
+
+    for (const step of steps) {
+      if (!safetyCage.contains(step.point)) {
+        console.error(
+          `[SAFETY] Arc aborted: spark (${step.point.x.toFixed(3)}, ` +
+          `${step.point.y.toFixed(3)}, ${step.point.z.toFixed(3)}) ` +
+          `is outside the work envelope.`,
+        );
+        break;
+      }
+      path.push(step.point);
+    }
+
+    return path;
   }
 }

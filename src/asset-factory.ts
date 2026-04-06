@@ -138,7 +138,8 @@ export class AssetPremium {
 
 // ── AssetFactory registry ─────────────────────────────────────────────────────
 
-type AssetConstructor = new () => BaseMachinistAsset;
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type AssetConstructor = new () => BaseMachinistAsset<any>;
 
 /**
  * Central registry for all machining asset modules.
