@@ -4,7 +4,8 @@
 import { CreateMLCEngine } from "https://esm.run/@mlc-ai/web-llm";
 
 // ── Config ────────────────────────────────────────────────────────────────────
-const MODEL_ID = "gemma-2-2b-it-q4f16_1-MLC";
+const MODEL_ID   = "gemma-2-2b-it-q4f16_1-MLC";
+const MODEL_SIZE = "~1.5 GB";
 
 const STYLE_PROMPTS = {
   anime:     "anime style, cel-shaded, vibrant colors, big expressive eyes, speed lines",
@@ -79,7 +80,7 @@ function removeCursor() {
 
 // ── Engine initialisation ─────────────────────────────────────────────────────
 async function initEngine() {
-  setStatus("loading", "Loading Cartoon AI… (first load downloads the model ~1.5 GB)");
+  setStatus("loading", `Loading Cartoon AI… (first load downloads the model ${MODEL_SIZE})`);
   setProgress(0);
   generateBtn.disabled = true;
 
