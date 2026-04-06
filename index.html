@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Cartoon Generator AI</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- ── Header ── -->
+  <header>
+    <span class="logo">🎬</span>
+    <div>
+      <h1>Cartoon Generator AI</h1>
+      <p>Powered by Gemma 2 · Runs 100% in your browser · No server required</p>
+    </div>
+  </header>
+
+  <!-- ── Model status ── -->
+  <div id="status-bar" class="loading">
+    <div id="status-dot" class="dot"></div>
+    <span id="status-text">Initialising…</span>
+  </div>
+
+  <div id="progress-wrap">
+    <div id="progress-bar">
+      <div id="progress-fill"></div>
+    </div>
+  </div>
+
+  <!-- ── Main ── -->
+  <main>
+
+    <!-- Input card -->
+    <div class="card">
+      <h2>🖊️ Your Cartoon Idea</h2>
+
+      <label for="prompt">Describe your cartoon concept</label>
+      <textarea
+        id="prompt"
+        placeholder="e.g. A retired superhero who opens a bakery and must save the city one croissant at a time…"
+      ></textarea>
+
+      <div class="btn-row" style="margin-top:10px;">
+        <button id="example-btn" class="btn btn-secondary" type="button">🎲 Random Idea</button>
+      </div>
+
+      <div class="row" style="margin-top:16px;">
+        <div>
+          <label for="style">Visual Style</label>
+          <select id="style">
+            <option value="anime">Anime</option>
+            <option value="pixar">Pixar / Disney 3D</option>
+            <option value="8bit">Retro 8-Bit Pixel Art</option>
+            <option value="comic">Comic Book</option>
+            <option value="manga">Manga (B&amp;W)</option>
+            <option value="watercolor">Watercolor Storybook</option>
+          </select>
+        </div>
+
+        <div>
+          <label for="tone">Tone</label>
+          <select id="tone">
+            <option value="fun and adventurous">Fun &amp; Adventurous</option>
+            <option value="comedic and silly">Comedic &amp; Silly</option>
+            <option value="dramatic and epic">Dramatic &amp; Epic</option>
+            <option value="heartwarming and emotional">Heartwarming &amp; Emotional</option>
+            <option value="dark and mysterious">Dark &amp; Mysterious</option>
+            <option value="educational and inspiring">Educational &amp; Inspiring</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="row" style="margin-top:14px;">
+        <div>
+          <label for="episodes">Number of Episodes to Outline</label>
+          <input id="episodes" type="text" value="1" placeholder="1" />
+        </div>
+      </div>
+
+      <div class="btn-row" style="margin-top:18px;">
+        <button id="generate-btn" class="btn btn-primary" type="button" disabled>
+          ✨ Generate Cartoon
+        </button>
+        <button id="stop-btn" class="btn btn-secondary" type="button" disabled>
+          ⏹ Stop
+        </button>
+      </div>
+    </div>
+
+    <!-- Output card -->
+    <div class="card">
+      <h2>📺 Generated Cartoon</h2>
+      <div id="output-text" class="placeholder">Your generated cartoon will appear here…</div>
+
+      <div class="btn-row" style="margin-top:16px;">
+        <button id="copy-btn" class="btn btn-secondary" type="button" disabled>📋 Copy</button>
+        <button id="clear-btn" class="btn btn-secondary" type="button">🗑 Clear</button>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- ── Footer ── -->
+  <footer>
+    <p>
+      Cartoon Generator AI · Powered by
+      <a href="https://webllm.mlc.ai" target="_blank" rel="noopener">WebLLM</a>
+      &amp;
+      <a href="https://ai.google.dev/gemma" target="_blank" rel="noopener">Gemma 2 2B</a>
+      · Runs entirely in your browser via WebGPU
+    </p>
+  </footer>
+
+  <script type="module" src="app.js"></script>
+</body>
+</html>
